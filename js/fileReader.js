@@ -61,7 +61,7 @@ window.onload = function() {
 
     function initialize() {
         window.addEventListener('resize', resizeCanvas, false);
-        resizeCanvas();
+        //resizeCanvas();
     }
     initialize();
 
@@ -72,6 +72,9 @@ window.onload = function() {
     aln_canvas.addEventListener('mouseleave', function() {
         over_col = -1;
         over_row = -1;
+    }, true);
+    aln_canvas.addEventListener('mousedown', function(e) {
+        doClick(e);
     }, true);
 };
 
@@ -101,14 +104,11 @@ function fileReadComplete (f) {
             }
             header = line.slice(1);  // drop leading '>'
         } else {
-            sequence += line;
+            sequence += line.toUpperCase();
         }
     }
     // add last entry
     alignment.push({'header': header, 'rawseq': sequence});
-
-    resizeCanvas();
-    redraw_alignment(0, alignment.length);
 
     // activate and configure horizontal slider
     $('#alignment_slider').slider('option', 'disabled', false)
@@ -118,4 +118,6 @@ function fileReadComplete (f) {
         .slider('option', 'min', Math.floor(aln_canvas.height / base_h))
         .slider('option', 'max', alignment.length)
         .slider('option', 'value', alignment.length);
+
+    resizeCanvas();
 }

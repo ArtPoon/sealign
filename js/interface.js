@@ -5,8 +5,10 @@
 // TODO: detect which base mouse is over
 // TODO: draw highlight box around base - in render.js
 
-var over_row,
-    over_col;
+var over_row = -1,
+    over_col = -1,
+    click_row = -1, // base coordinates of mouse-down event
+    click_col = -1;
 
 function getPos(e, canvas) {
     /** Bind this event handler to mouse-over trigger to calculate
@@ -50,5 +52,21 @@ function updateResidue(e) {
     var pos = getPos(e, aln_canvas);
     over_row = Math.floor(pos.y / base_h);
     over_col = Math.floor(pos.x / base_w);
+
     redraw_alignment($('#alignment_slider').slider('value'), $('#vertical_slider').slider('value'));
+}
+
+function doClick(e) {
+    /**
+     * The current base is being selected.
+     */
+    var pos = getPos(e, aln_canvas);
+
+    click_row = Math.floor(pos.y / base_h);
+    click_col = Math.floor(pos.x / base_w);
+    redraw_alignment($('#alignment_slider').slider('value'), $('#vertical_slider').slider('value'));
+}
+
+function doDown(e) {
+
 }

@@ -6,7 +6,20 @@
 
 
 
-var palette = {'A': 'rgb(200,0,0)', 'C': 'rgb(0,150,0)', 'G': 'rgb(90,90,90)', 'T': 'rgb(0,0,200)'};
+var palette = {
+    'A': 'rgb(200,0,0)',
+    'C': 'rgb(0,150,0)',
+    'G': 'rgb(90,90,90)',
+    'T': 'rgb(0,0,200)'
+};
+
+var invert_palette = {
+    'A': 'rgb(55,255,255)',
+    'C': 'rgb(255,105,255)',
+    'G': 'rgb(165,165,165)',
+    'T': 'rgb(255,255,55)'
+};
+
 var base_w = 16,  // width of a residue (nucleotide/amino acid)
     base_h = 20;  // height of  "  "
 
@@ -51,7 +64,6 @@ function redraw_alignment (x, y) {
      * @param {number} y  An integer ranging from 1 to the number of
      *  sequences in the alignment.
      */
-    // FIXME: not displaying the last sequence
     // TODO: apply alignment operations
     if (alignment.length == 0) {
         return;
@@ -84,11 +96,25 @@ function redraw_alignment (x, y) {
             aln_context.fillStyle = palette[nuc];
             aln_context.fillRect(c*base_w, r*base_h, base_w-1, base_h-1);
             aln_context.strokeText(nuc, c*base_w + base_w/2, (0.5+r)*base_h);
-            if (r == over_row && c == over_col) {
-                aln_context.lineWidth = 3;
-                aln_context.strokeRect(c*base_w+0.5, r*base_h+0.5, base_w, base_h);
-                aln_context.lineWidth = 1;
-            }
         }
+    }
+
+    // highlight base under mouse pointer
+    if (over_col >= 0) {
+        aln_context.lineWidth = 3;
+        aln_context.strokeRect(over_col*base_w+0.5, over_row*base_h+0.5, base_w-1, base_h-1);
+        aln_context.lineWidth = 1;
+    }
+
+    // highlight base that was clicked on
+    if (click_col >= 0) {
+        seq = alignment[upper_bound+click_row]['rawseq'];
+        nuc = seq[left_bound+click_col];
+        
+        aln_context.fillStyle = invert_palette[nuc];
+        aln_context.fillRect(click_col*base_w, click_row*base_h, base_w-1, base_h-1);
+        aln_context.strokeStyle = 'black';
+        aln_context.strokeText(nuc, (click_col+0.5)*base_w, (click_row+0.5)*base_h);
+        aln_context.strokeStyle = 'white';
     }
 }
