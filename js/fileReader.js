@@ -15,6 +15,8 @@ var htmlTop, htmlLeft,
     stylePaddingLeft, styleBorderLeft,
     stylePaddingTop, styleBorderTop;
 
+var dragging = false;  // are we dragging mouse on canvas?
+
 window.onload = function() {
 	// Check for the various File API support.
 	if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -67,15 +69,18 @@ window.onload = function() {
 
     // bind mouse-over event handlers
     aln_canvas.addEventListener('mousemove', function(e) {
-        updateResidue(e);
+        doMove(e);
     }, true);
     aln_canvas.addEventListener('mouseleave', function() {
         over_col = -1;
         over_row = -1;
     }, true);
     aln_canvas.addEventListener('mousedown', function(e) {
-        doClick(e);
+        doDown(e);
     }, true);
+    aln_canvas.addEventListener('mouseup', function(e) {
+        doUp(e);
+    })
 };
 
 

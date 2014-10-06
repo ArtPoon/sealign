@@ -93,6 +93,19 @@ function redraw_alignment (x, y) {
         seq = alignment[upper_bound + r]['rawseq'];
         for (var c = 0; c < window_width; c++) {
             nuc = seq[left_bound+c];
+
+            if (drag_col >= 0) {
+                if ((r >= click_row && r <= drag_row) || (r >= drag_row && r <= click_row)) {
+                    if ((c >= click_col && c <= drag_col) || (c >= drag_col && c <= click_col)) {
+                        aln_context.fillStyle = invert_palette[nuc];
+                        aln_context.fillRect(c*base_w, r*base_h, base_w-1, base_h-1);
+                        aln_context.strokeStyle = 'black';
+                        aln_context.strokeText(nuc, (c+0.5)*base_w, (r+0.5)*base_h);
+                        aln_context.strokeStyle = 'white';
+                        continue;
+                    }
+                }
+            }
             aln_context.fillStyle = palette[nuc];
             aln_context.fillRect(c*base_w, r*base_h, base_w-1, base_h-1);
             aln_context.strokeText(nuc, c*base_w + base_w/2, (0.5+r)*base_h);
@@ -107,14 +120,16 @@ function redraw_alignment (x, y) {
     }
 
     // highlight base that was clicked on
-    if (click_col >= 0) {
+    /*
+    if (dragging) {
         seq = alignment[upper_bound+click_row]['rawseq'];
         nuc = seq[left_bound+click_col];
-        
+
         aln_context.fillStyle = invert_palette[nuc];
         aln_context.fillRect(click_col*base_w, click_row*base_h, base_w-1, base_h-1);
         aln_context.strokeStyle = 'black';
         aln_context.strokeText(nuc, (click_col+0.5)*base_w, (click_row+0.5)*base_h);
         aln_context.strokeStyle = 'white';
     }
+    */
 }

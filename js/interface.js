@@ -5,10 +5,12 @@
 // TODO: detect which base mouse is over
 // TODO: draw highlight box around base - in render.js
 
-var over_row = -1,
+var over_row = -1, // base coordinates of mouse-over
     over_col = -1,
     click_row = -1, // base coordinates of mouse-down event
-    click_col = -1;
+    click_col = -1,
+    drag_row = -1,// base coordinates of mouse drag, persistent with moves
+    drag_col = -1;
 
 function getPos(e, canvas) {
     /** Bind this event handler to mouse-over trigger to calculate
@@ -39,7 +41,7 @@ function getPos(e, canvas) {
     return { x: mx, y: my };
 }
 
-function updateResidue(e) {
+function doMove(e) {
     /**
      * Determine which base or amino acid is under the mouse pointer.
      * Update global variables storing row and column in alignment.
@@ -50,23 +52,32 @@ function updateResidue(e) {
     }
 
     var pos = getPos(e, aln_canvas);
+    if (dragging) {
+        drag_row = Math.floor(pos.y / base_h);
+        drag_col = Math.floor(pos.x / base_w);
+    }
     over_row = Math.floor(pos.y / base_h);
     over_col = Math.floor(pos.x / base_w);
 
     redraw_alignment($('#alignment_slider').slider('value'), $('#vertical_slider').slider('value'));
 }
 
-function doClick(e) {
+function doDown(e) {
     /**
-     * The current base is being selected.
+     * Highlight the current base is being selected.
      */
     var pos = getPos(e, aln_canvas);
-
+    dragging = true;
     click_row = Math.floor(pos.y / base_h);
     click_col = Math.floor(pos.x / base_w);
+    drag_row = click_row;
+    drag_col = click_col;
+    over_row = -1; // reset selection
+    over_col = -1;
     redraw_alignment($('#alignment_slider').slider('value'), $('#vertical_slider').slider('value'));
 }
 
-function doDown(e) {
 
+function doUp(e) {
+    dragging = false;
 }
