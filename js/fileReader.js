@@ -80,7 +80,13 @@ window.onload = function() {
     }, true);
     aln_canvas.addEventListener('mouseup', function(e) {
         doUp(e);
-    })
+    });
+    aln_canvas.addEventListener('keydown', function(e) {
+        switchSelectionMode(e);
+    });
+    aln_canvas.addEventListener('keyup', function() {
+        releaseSelectionMode();
+    });
 };
 
 

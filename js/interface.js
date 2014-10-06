@@ -12,6 +12,8 @@ var over_row = -1, // base coordinates of mouse-over
     drag_row = -1,// base coordinates of mouse drag, persistent with moves
     drag_col = -1;
 
+var selection_mode = null;
+
 function getPos(e, canvas) {
     /** Bind this event handler to mouse-over trigger to calculate
      * the mouse coordinates relative to the Canvas.
@@ -53,7 +55,15 @@ function doMove(e) {
 
     var pos = getPos(e, aln_canvas);
     if (dragging) {
-        drag_row = Math.floor(pos.y / base_h);
+
+        if (selection_mode == 0) {
+            // TODO: we can't reset click_row for this - add drag start variable?
+            // select entire column
+            drag_row = alignment.length;
+        } else {
+            // this sequence only
+            drag_row = Math.floor(pos.y / base_h);
+        }
         drag_col = Math.floor(pos.x / base_w);
     }
     over_row = Math.floor(pos.y / base_h);
@@ -80,4 +90,22 @@ function doDown(e) {
 
 function doUp(e) {
     dragging = false;
+}
+
+function switchSelectionMode(e) {
+    /*
+    Capture modifier key press to change behaviour of selection.
+     */
+    if (e.which == 16) {
+        selection_mode = 0;  // shift
+    } else if (e.which == 17) {
+        selection_mode = 0;  // ctrl
+    } else if (e.which == 18) {
+        selection_mode = 0;  // option/alt
+    }
+}
+
+function releaseSelectionMode() {
+    console.log('up');
+    selection_mode = -1;
 }
