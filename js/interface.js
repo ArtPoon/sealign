@@ -9,10 +9,13 @@ var over_row = -1, // base coordinates of mouse-over
     over_col = -1,
     click_row = -1, // base coordinates of mouse-down event
     click_col = -1,
-    drag_row = -1,// base coordinates of mouse drag, persistent with moves
-    drag_col = -1;
+    selected_row_0 = -1,
+    selected_col_0 = -1,
+    selected_row_1 = -1,
+    selected_col_1 = -1;
 
 var selection_mode = null;
+var drag_selection;
 
 function getPos(e, canvas) {
     /** Bind this event handler to mouse-over trigger to calculate
@@ -43,6 +46,23 @@ function getPos(e, canvas) {
     return { x: mx, y: my };
 }
 
+function inSelection(r, c) {
+    /**
+     * Is the given row and column within the currently selected
+     * range of alignment rows and columns?
+     */
+    if (selected_row_0 == selected_row_1 && selected_col_0 == selected_col_1) {
+        // single base selection, probably a mouse-down
+        return false;
+    }
+    if ((r >= selected_row_0 && r <= selected_row_1) || (r >= selected_row_1 && r <= selected_row_0)) {
+        if ((c >= selected_col_0 && c <= selected_col_1) || (c >= selected_col_1 && c <= selected_col_0)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function doMove(e) {
     /**
      * Determine which base or amino acid is under the mouse pointer.
@@ -55,16 +75,21 @@ function doMove(e) {
 
     var pos = getPos(e, aln_canvas);
     if (dragging) {
-
-        if (selection_mode == 0) {
-            // TODO: we can't reset click_row for this - add drag start variable?
-            // select entire column
-            drag_row = alignment.length;
+        if (drag_selection) {
+            // dragging a selection - alignment operation!
         } else {
-            // this sequence only
-            drag_row = Math.floor(pos.y / base_h);
+            if (selection_mode == 0) {
+                // TODO: we can't reset click_row for this - add drag start variable?
+                // select entire column
+                selected_row_0 = 0;
+                selected_row_1 = alignment.length;
+            } else {
+                // this sequence only
+                selected_row_0 = click_row;  // remember where we clicked
+                selected_row_1 = Math.floor(pos.y / base_h);
+            }
+            selected_col_1 = Math.floor(pos.x / base_w);
         }
-        drag_col = Math.floor(pos.x / base_w);
     }
     over_row = Math.floor(pos.y / base_h);
     over_col = Math.floor(pos.x / base_w);
@@ -74,16 +99,27 @@ function doMove(e) {
 
 function doDown(e) {
     /**
-     * Highlight the current base is being selected.
+     * Event handler for mouse click
+     * Is there a selection active?
+     * Yes - Is the click on the selection?
+     *      Yes - Activate selection for drag
+     *      No - Unselect range
+     * No - Create new selection
      */
     var pos = getPos(e, aln_canvas);
     dragging = true;
     click_row = Math.floor(pos.y / base_h);
     click_col = Math.floor(pos.x / base_w);
-    drag_row = click_row;
-    drag_col = click_col;
-    over_row = -1; // reset selection
-    over_col = -1;
+    if (inSelection(click_row, click_col)) {
+        drag_selection = true;
+    } else {
+        // new selection
+        drag_selection = false;
+        selected_row_0 = click_row;
+        selected_col_0 = click_col;
+        selected_row_1 = click_row;
+        selected_col_1 = click_col;
+    }
     redraw_alignment($('#alignment_slider').slider('value'), $('#vertical_slider').slider('value'));
 }
 

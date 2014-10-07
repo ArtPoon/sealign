@@ -94,9 +94,9 @@ function redraw_alignment (x, y) {
         for (var c = 0; c < window_width; c++) {
             nuc = seq[left_bound+c];
 
-            if (drag_col >= 0) {
-                if ((r >= click_row && r <= drag_row) || (r >= drag_row && r <= click_row)) {
-                    if ((c >= click_col && c <= drag_col) || (c >= drag_col && c <= click_col)) {
+            if (selected_col_1 >= 0) {
+                if ((r >= selected_row_0 && r <= selected_row_1) || (r >= selected_row_1 && r <= selected_row_0)) {
+                    if ((c >= selected_col_0 && c <= selected_col_1) || (c >= selected_col_1 && c <= selected_col_0)) {
                         aln_context.fillStyle = invert_palette[nuc];
                         aln_context.fillRect(c*base_w, r*base_h, base_w-1, base_h-1);
                         aln_context.strokeStyle = 'black';
