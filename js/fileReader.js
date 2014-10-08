@@ -6,6 +6,8 @@
 var reader = new FileReader(),
     alignment = [];
 
+var maxlen = 0;  // maximum sequence length
+
 var aln_canvas,
     aln_context,
     lab_canvas,
@@ -99,8 +101,7 @@ function fileReadComplete (f) {
     var contents = f.target.result,
         lines = contents.split(/\r\n|\r|\n/g),
         header = '',
-        sequence = '',
-        maxlen = 0;  // maximum sequence length
+        sequence = '';
 
     // parse FASTA file
     for (var line, i = 0; i < lines.length; i++) {

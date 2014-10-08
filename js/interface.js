@@ -78,8 +78,7 @@ function doMove(e) {
         if (drag_selection) {
             // dragging a selection - alignment operation!
         } else {
-            if (selection_mode == 0) {
-                // TODO: we can't reset click_row for this - add drag start variable?
+            if (selection_mode == 2) { // option/alt
                 // select entire column
                 selected_row_0 = 0;
                 selected_row_1 = alignment.length;
@@ -88,7 +87,14 @@ function doMove(e) {
                 selected_row_0 = click_row;  // remember where we clicked
                 selected_row_1 = Math.floor(pos.y / base_h);
             }
-            selected_col_1 = Math.floor(pos.x / base_w);
+            if (selection_mode == 0) {
+                selected_col_0 = 0;
+                selected_col_1 = maxlen;
+            } else {
+                selected_col_0 = click_col;
+                selected_col_1 = Math.floor(pos.x / base_w);
+            }
+
         }
     }
     over_row = Math.floor(pos.y / base_h);
@@ -135,13 +141,12 @@ function switchSelectionMode(e) {
     if (e.which == 16) {
         selection_mode = 0;  // shift
     } else if (e.which == 17) {
-        selection_mode = 0;  // ctrl
+        selection_mode = 1;  // ctrl
     } else if (e.which == 18) {
-        selection_mode = 0;  // option/alt
+        selection_mode = 2;  // option/alt
     }
 }
 
 function releaseSelectionMode() {
-    console.log('up');
     selection_mode = -1;
 }
